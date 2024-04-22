@@ -8,6 +8,8 @@
 , libGL
 , libglvnd
 , xorg
+, flite
+, libpulseaudio
 }:
 
 let
@@ -23,6 +25,16 @@ let
     platforms = platforms.linux;
     license = licenses.unfree;
   };
+
+  xorgLibs = with xorg; [
+    libX11
+    libXext
+    libXcursor
+    libXrandr
+    libXxf86vm
+    libpulseaudio
+    libGL
+  ];
 
   legacy-launcher = stdenv.mkDerivation (self: {
     inherit pname version meta;
@@ -51,13 +63,12 @@ in buildFHSUserEnv {
 
   targetPkgs = pkgs: [
     legacy-launcher
+    
     jre
     jre8
     udev
-    libGL
-    libglvnd
-    xorg.libXxf86vm
-  ];
+    flite
+  ] ++ xorgLibs;
 
   runScript = writeShellScript "legacy-launcher" ''
     cd ${legacy-launcher}
