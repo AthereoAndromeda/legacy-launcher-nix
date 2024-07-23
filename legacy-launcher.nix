@@ -16,7 +16,7 @@ let
   pname = "legacy-launcher";
   version = "0.0.1";
   
-  #
+  # TODO: Allow JRE20 and different versions
   javaRuntime = jre8;
 
   meta = with lib; {
@@ -34,6 +34,7 @@ let
     libXxf86vm
     libpulseaudio
     libGL
+    libglvnd
   ];
 
   legacy-launcher = stdenv.mkDerivation (self: {
