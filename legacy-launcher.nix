@@ -1,4 +1,5 @@
 { stdenv, lib
+, javaRuntimes ? [jre jre8]
 , buildFHSUserEnv
 , writeShellScript
 , fetchurl
@@ -15,9 +16,6 @@
 let
   pname = "legacy-launcher";
   version = "0.0.1";
-  
-  # TODO: Allow JRE20 and different versions
-  javaRuntime = jre8;
 
   meta = with lib; {
     description = "Legacy Launcher Unofficial";
@@ -55,6 +53,9 @@ let
       mkdir -p $out/opt
       cp $src $out/opt/Legacy.jar
 
+      # add symlinks to JRE to make switching to them easier
+      ln -s ${jre8} $out/opt/java8
+      
       runHook postInstall
     '';
   });
@@ -65,11 +66,9 @@ in buildFHSUserEnv {
   targetPkgs = pkgs: [
     legacy-launcher
     
-    jre
-    jre8
     udev
     flite
-  ] ++ xorgLibs;
+  ] ++ xorgLibs ++ javaRuntimes;
 
   runScript = writeShellScript "legacy-launcher" ''
     cd ${legacy-launcher}
