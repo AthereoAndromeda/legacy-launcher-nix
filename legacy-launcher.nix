@@ -1,28 +1,21 @@
-{ stdenv, lib
-, javaRuntimes ? [jre jre8]
-, buildFHSUserEnv
-, writeShellScript
-, fetchurl
-, jre
-, jre8
-, udev
-, libGL
-, libglvnd
-, xorg
-, flite
-, libpulseaudio
-}:
-
-let
+{
+  stdenv,
+  lib,
+  javaRuntimes ? [jre jre8],
+  buildFHSUserEnv,
+  writeShellScript,
+  fetchurl,
+  jre,
+  jre8,
+  udev,
+  libGL,
+  libglvnd,
+  xorg,
+  flite,
+  libpulseaudio,
+}: let
   pname = "legacy-launcher";
   version = "0.0.1";
-
-  meta = with lib; {
-    description = "Legacy Launcher Unofficial";
-    homepage = "https://tlaun.ch";
-    platforms = platforms.linux;
-    license = licenses.unfree;
-  };
 
   xorgLibs = with xorg; [
     libX11
@@ -36,7 +29,7 @@ let
   ];
 
   legacy-launcher = stdenv.mkDerivation (self: {
-    inherit pname version meta;
+    inherit pname version;
 
     src = fetchurl {
       url = "https://llaun.ch/jar";
@@ -55,23 +48,33 @@ let
 
       # add symlinks to JRE to make switching to them easier
       ln -s ${jre8} $out/opt/java8
-      
+
       runHook postInstall
     '';
   });
-in buildFHSUserEnv {
-  inherit meta;
-  name = pname;
+in
+  buildFHSUserEnv {
+    name = pname;
 
-  targetPkgs = pkgs: [
-    legacy-launcher
-    
-    udev
-    flite
-  ] ++ xorgLibs ++ javaRuntimes;
+    targetPkgs = pkgs:
+      [
+        legacy-launcher
 
-  runScript = writeShellScript "legacy-launcher" ''
-    cd ${legacy-launcher}
-    java -jar /opt/Legacy.jar
-  '';
-}
+        udev
+        flite
+      ]
+      ++ xorgLibs
+      ++ javaRuntimes;
+
+    runScript = writeShellScript "legacy-launcher" ''
+      cd ${legacy-launcher}
+      java -jar /opt/Legacy.jar
+    '';
+
+    meta = with lib; {
+      description = "Legacy Launcher Unofficial";
+      homepage = "https://tlaun.ch";
+      platforms = platforms.linux;
+      license = licenses.unfree;
+    };
+  }
