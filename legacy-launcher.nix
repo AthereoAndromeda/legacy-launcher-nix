@@ -19,7 +19,7 @@
   pname = "legacy-launcher";
   version = "0.0.1";
 
-  icon = ./ll.svg;
+  icon = ./assets/ll-icon.svg;
 
   xorgLibs = with xorg; [
     libX11
