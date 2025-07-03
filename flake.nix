@@ -18,7 +18,11 @@
           "legacy-launcher"
         ];
     };
-  in {
+  in rec {
     packages.${system}.default = pkgs.callPackage ./. {};
+
+    overlays = {
+      legacy-launcher = final: prev: {legacy-launcher = packages.${prev.system}.default;};
+    };
   };
 }
