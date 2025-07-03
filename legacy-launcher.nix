@@ -46,7 +46,9 @@
 
     installPhase = ''
       runHook preInstall
-      install -Dm444 ${icon} $out/share/icons/hicolor/scalable/apps/legacy-launcher.svg
+
+      mkdir -p $out/share/icons/hicolor/scalable/apps/
+      install -Dm444 ${icon} $out/share/icons/hicolor/scalable/apps/${pname}.svg
 
       mkdir -p $out/opt
       cp $src $out/opt/Legacy.jar
