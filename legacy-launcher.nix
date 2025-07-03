@@ -2,6 +2,7 @@
   stdenv,
   lib,
   makeDesktopItem,
+  copyDesktopItems,
   ll-hash ? "sha256-C3NBjYEHnrtTwEVmFkcKQqVr/9/fXoKSQG8Hs2EwbNg=",
   buildFHSEnv,
   javaRuntimes ? [jre jre8],
@@ -34,6 +35,9 @@
 
   legacy-launcher = stdenv.mkDerivation (self: {
     inherit pname version;
+    nativeBuildInputs = [
+      copyDesktopItems
+    ];
 
     src = fetchurl {
       url = "https://llaun.ch/jar";
@@ -47,9 +51,6 @@
     installPhase = ''
       runHook preInstall
 
-      mkdir -p $out/share/icons/hicolor/scalable/apps/
-      install -Dm444 ${icon} $out/share/icons/hicolor/scalable/apps/${pname}.svg
-
       mkdir -p $out/opt
       cp $src $out/opt/Legacy.jar
 
@@ -59,12 +60,18 @@
       runHook postInstall
     '';
 
+    postInstall = ''
+      mkdir -p $out/share/{applications,/share/icons/hicolor/scalable/apps/}
+      install -Dm444 ${icon} -t $out/share/icons/hicolor/scalable/apps/${pname}.svg
+    '';
+
     desktopItems = [
       (makeDesktopItem {
         name = pname;
         desktopName = "Legacy Launcher";
         exec = "legacy-launcher";
         icon = "legacy-launcher";
+        comment = "A Minecraft Client";
         categories = ["Game"];
       })
     ];
@@ -72,6 +79,26 @@
 in
   buildFHSEnv {
     name = pname;
+
+    nativeBuildInputss = [
+      copyDesktopItems
+    ];
+
+    desktopItems = [
+      (makeDesktopItem {
+        name = pname;
+        desktopName = "Legacy Launcher";
+        exec = "legacy-launcher";
+        icon = "legacy-launcher";
+        comment = "A Minecraft Client";
+        categories = ["Game"];
+      })
+    ];
+
+    extraInstallCommands = ''
+      mkdir -p $out/share/{applications,/share/icons/hicolor/scalable/apps/}
+      install -Dm444 ${icon} -t $out/share/icons/hicolor/scalable/apps/${pname}.svg
+    '';
 
     targetPkgs = pkgs:
       [
