@@ -2,6 +2,7 @@
   stdenv,
   lib,
   makeDesktopItem,
+  ll-hash ? "sha256-C3NBjYEHnrtTwEVmFkcKQqVr/9/fXoKSQG8Hs2EwbNg=",
   buildFHSEnv,
   javaRuntimes ? [jre jre8],
   writeShellScript,
@@ -36,7 +37,7 @@
 
     src = fetchurl {
       url = "https://llaun.ch/jar";
-      hash = "sha256-3y0lFukFzch6aOxFb4gWZKWxWLqBCTQlHXtwp0BnlYg=";
+      hash = ll-hash;
     };
 
     dontBuild = true;
