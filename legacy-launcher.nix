@@ -1,8 +1,9 @@
 {
   stdenv,
   lib,
+  makeDesktopItem,
+  buildFHSEnv,
   javaRuntimes ? [jre jre8],
-  buildFHSUserEnv,
   writeShellScript,
   fetchurl,
   jre,
@@ -16,6 +17,8 @@
 }: let
   pname = "legacy-launcher";
   version = "0.0.1";
+
+  icon = ./ll.svg;
 
   xorgLibs = with xorg; [
     libX11
@@ -42,6 +45,7 @@
 
     installPhase = ''
       runHook preInstall
+      install -Dm444 ${icon} $out/share/icons/hicolor/scalable/apps/legacy-launcher.svg
 
       mkdir -p $out/opt
       cp $src $out/opt/Legacy.jar
@@ -51,9 +55,19 @@
 
       runHook postInstall
     '';
+
+    desktopItems = [
+      (makeDesktopItem {
+        name = pname;
+        desktopName = "Legacy Launcher";
+        exec = "legacy-launcher";
+        icon = "legacy-launcher";
+        categories = ["Game"];
+      })
+    ];
   });
 in
-  buildFHSUserEnv {
+  buildFHSEnv {
     name = pname;
 
     targetPkgs = pkgs:
@@ -74,6 +88,7 @@ in
     meta = with lib; {
       description = "Legacy Launcher Unofficial";
       homepage = "https://tlaun.ch";
+      mainProgram = "legacy-launcher";
       platforms = platforms.linux;
       license = licenses.unfree;
     };
